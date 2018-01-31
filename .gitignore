@@ -6,6 +6,7 @@ __pycache__/
 .DS_Store
 *download/
 *assets/
+*processed/
 
 # C extensions
 *.so
