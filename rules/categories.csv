@@ -227,6 +227,7 @@ Internet Banking {{1550}},rentalIncome
 Branch Transaction RETURNED CHEQUE {{-1550}},rentalIncome
 Internet Banking {{1570}},rentalIncome
 INSTANT TELLER DEPOSIT JANE{{1550}},rentalIncome
+Internet Banking {{1598}},rentalIncome
 INTERNET DEPOSIT,deposit
 MEMO - TRANSFER,fee
 MANCHU WOK,restaurant
@@ -366,3 +367,42 @@ BUCK OR TWO,shopping
 TIGERDIRECT,shopping
 ANIMAL,pets
 HUSKY,auto
+JPY @,travel
+HKD @,travel
+CITY OF VAUGHAN,homeExpense
+EUR @,travel
+SHEHERZADE,restaurant
+WOW AIR,travel
+GO TRANSIT,transportation
+Deloitte Inc.,expensing
+NO FRILLS,grocery
+Electronic Funds Transfer DEPOSIT Google LLC,google
+TINH TAM TRAI,restaurant
+HAIRSTYLING,personal
+SURASANG,fastfood
+HOT STAR,fastfood
+ISK @,travel
+GBP @,travel
+CHOCOLATIER,shopping
+URBAN PLANET,clothing
+CHATIME,breakfastCoffee
+BYBLOS,restaurant
+IMPARK,auto
+TEXTILES,shopping
+ATM WITHDRAWAL,cash
+PORTER AIR,travel
+POKE BAR,restaurant
+MILLER TAVERN,pub
+WILLIAMS LANDING,restaurant
+RONA,homeExpense
+THE CHILDRENS PLACE,kids
+PHO MI VIET THA,restaurant
+ANA PASTRY,grocery
+CONVENIENCE,shopping
+MAROUF TOCHAL,entertainment
+TREB,misc
+AIRCANADA.COM,travel
+LA VIE EN ROSE,shopping
+REAL ESTATE COUNCIL,misc
+VISTAPRINT.CA,misc
+OLD NAVY,shopping

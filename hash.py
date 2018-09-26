@@ -3,6 +3,7 @@ import pandas as pd
 import hashlib, binascii
 import numpy as np
 import time
+import re
 from shutil import copyfile
 from os import listdir
 
@@ -10,7 +11,9 @@ def hashit(df):
     hashs = []
     for index, row in df.iterrows():
         h = hashlib.new('ripemd160')
-#         h.update(row['item'].encode())
+        it = str(row['item'])
+        it2= ' '.join(re.findall(r"[\w']+", it))
+        h.update(it2.encode())
         h.update(str(row['credit']).encode())
         h.update(str(row['debit']).encode())
         h.update(str(row['date']).encode())
@@ -27,14 +30,14 @@ def combineThem (old, new, file):
     assert old.dtypes['debit'] == 'float64'
     assert old.dtypes['credit'] == 'float64'
     new['hash']= hashit(new)
-    old['hash']= hashit(old)
     hashfound = []
     for index, row in new.iterrows():
         hashfound.append(row['hash'] in old['hash'].values)
     new['hashfound']=hashfound
+    new.loc[new['hashfound'] == False, 'account']=file.split(".")[0];
     newItems = new[new['hashfound'] == False]
     oldToSave = old[oldColumns]
-    newToSave = newItems[['date','item','debit','credit']]
+    newToSave = newItems[['date','item','debit','credit','hash','account']]
     combined = pd.concat([oldToSave, newToSave])
     combined['custom'].fillna("",inplace=True)
     try:
@@ -57,16 +60,9 @@ except:
 
 # Save files to their respective counterpart , e.g visa.csv, debit.csv etc
 miliTime = int(round(time.time() * 1000))
-oldColumns=['date','item','debit','credit','custom']
+oldColumns=['date','item','debit','credit','custom','hash', 'account']
 newColumns=['date','item','debit','credit','card']
-for file in dlFiles:
-    old = pd.read_csv("./assets/"+file, header=None,names=oldColumns)
-    new = pd.read_csv("./download/"+file, header=None, names=newColumns)
-    combined = combineThem(old, new, file)
-    combined.to_csv(f'./assets/backup/{file.split(".")[0]}-{str(miliTime)}.{file.split(".")[1]}', index=False, header=False)
-    combined.to_csv(f'./assets/{file}', index=False, header=False)
-    
-# aggregate everything in a data.csv file
+
 old = pd.read_csv("./assets/data.csv", header=None,names=oldColumns)
 combined = old
 for file in dlFiles:

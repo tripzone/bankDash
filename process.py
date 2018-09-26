@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 
-data = pd.read_csv("./assets/data.csv", header=None, names=['date','item', 'debit', 'credit','subCategory'],index_col=False)
+data = pd.read_csv("./assets/data.csv", header=None, names=['date','item', 'debit', 'credit','subCategory', 'hash', 'account'],index_col=False)
 maps = pd.read_csv("./rules/1to1maps.csv", header=None, names=['item', 'subCategory'])
 subCategories = pd.read_csv("./rules/categories.csv", header=None, names=['item', 'subCategory'])
 categories = pd.read_csv("./rules/breakdown.csv", header=None, names=['subCategory', 'category'])
@@ -52,5 +52,14 @@ dataWithoutCategory = (data[data['subCategory'] == ""])
 dataWithCategory[['item','category','subCategory','date','year','month','debit','credit','balance']].sort_values(by='date', ascending=False).to_csv('./processed/processed.csv', index=False)
 dataWithoutCategory[['item','date','balance']].to_csv('./processed/not_found.csv')
 
-print('unCategorized items')
+gooddata = pd.read_csv("./processed/processed.csv")
+items = []
+for index, row in gooddata.iterrows():
+    temp = {}
+    for key in row.keys():
+        temp[key] = row[key]
+    items.append(temp)
+with open('processed/js/data.json', 'w') as jsonFile:
+    json.dump(items, jsonFile)
+
 print(dataWithoutCategory[['item','date','balance']])
