@@ -9,11 +9,10 @@ from os import listdir
 import re
 
 # Hash Data
-
 oldColumns=['date','item','debit','credit','subCategory','hash', 'account']
 addedColumns = ['date','item','debit','credit','hash','account']
 newColumns=['date','item','debit','credit','card']
-processedColumns=['item','category','subCategory','date','year','month','debit','credit','balance']
+processedColumns=['item','category','subCategory','date','year','month','debit','credit','balance', 'account']
 
 def hashit(df):
     hashs = []
@@ -31,7 +30,7 @@ def hashit(df):
 
 def getFile(file):
     if file == "data":
-        return pd.read_csv("./processed/data.csv", header=None, names=['date','item', 'debit', 'credit','subCategory', 'hash', 'account'],index_col=False)
+        return pd.read_csv("./processed/data.csv", header=None, names=oldColumns,index_col=False)
     elif file == "processed":
         return pd.read_csv("./processed/processed.csv",index_col=False)
     elif file == "maps":
@@ -66,6 +65,17 @@ def findNewItems(old, new, fileName):
     new.loc[new['hashfound'] == False, 'account'] = fileName;
     newItems = new[new['hashfound'] == False]
     return newItems
+
+def writeToJson(df):
+    gooddata = df
+    items = []
+    for index, row in gooddata.iterrows():
+        temp = {}
+        for key in row.keys():
+            temp[key] = row[key]
+        items.append(temp)
+    with open('analysis/js/data.json', 'w') as jsonFile:
+        json.dump(items, jsonFile)
 
 def hashData():
     global oldColumns
@@ -154,7 +164,7 @@ def processData(newItems,doAll = False):
     data['month']= pd.to_datetime(data['date']).dt.month
 
     return data
-
+    
 def resetToCurrentData():
     processedData = processData(None, True)  
     processedToSave = processedData[processedColumns].sort_values(by='date', ascending=False)
@@ -170,18 +180,20 @@ def runProcess():
             processedAll = pd.concat([processedData, processedAlready])
             processedToSave = processedAll[processedColumns].sort_values(by='date', ascending=False)
             saveDf(processedToSave, 'processed', 'processed', True)
-            
+
             dataAll = getFile('data')
             combinedData = pd.concat([dataAll, newItems])
             combinedData = combinedData[oldColumns]
             saveDf(combinedData, 'data', 'processed', False)
+
+            writeToJson(processedToSave)
+
             print("SAVED")
         else:
             print('Found Gaps, NOT SAVED')
             print(dataWithoutCategory[['item','date','balance']])
-
-    #         dataWithoutCategory[['item','date','balance']].to_csv('./processed/not_found.csv')
+    #       dataWithoutCategory[['item','date','balance']].to_csv('./processed/not_found.csv')
     else:
         print('no new items')
-
+        
 runProcess()
