@@ -8,7 +8,38 @@ from shutil import copyfile
 from os import listdir
 import re
 
+def getFiles():
+    dlFiles = listdir("./download")
+    try:
+        dlFiles.remove('.DS_Store')
+    except:
+        pass
+    
+    result = []
+    for file in dlFiles:
+        fileObject={"name":None, "data":None}
+        newData = pd.read_csv("./download/"+file, header=None, names=newColumns)
+        fileObject["name"] = file.split(".")[0]
+        fileObject["data"] = newData
+        result.append(fileObject)
+    return result
+
+
+def getFile(file):
+    if file == "data":
+        return pd.read_csv("./processed/data.csv", header=None, names=oldColumns,index_col=False)
+    elif file == "processed":
+        return pd.read_csv("./processed/processed.csv",index_col=False)
+    elif file == "maps":
+        return pd.read_csv("./rules/1to1maps.csv", header=None, names=['item', 'subCategory'])
+    elif file == "subCategories":
+        return pd.read_csv("./rules/categories.csv", header=None, names=['item', 'subCategory'])
+    elif file == "categories":
+        return pd.read_csv("./rules/breakdown.csv", header=None, names=['subCategory', 'category'])
+
+
 # Hash Data
+
 oldColumns=['date','item','debit','credit','subCategory','hash', 'account']
 addedColumns = ['date','item','debit','credit','hash','account']
 newColumns=['date','item','debit','credit','card']
@@ -27,19 +58,6 @@ def hashit(df):
         hashed =h.hexdigest()
         hashs.append(hashed)
     return hashs
-
-def getFile(file):
-    if file == "data":
-        return pd.read_csv("./processed/data.csv", header=None, names=oldColumns,index_col=False)
-    elif file == "processed":
-        return pd.read_csv("./processed/processed.csv",index_col=False)
-    elif file == "maps":
-        return pd.read_csv("./rules/1to1maps.csv", header=None, names=['item', 'subCategory'])
-    elif file == "subCategories":
-        return pd.read_csv("./rules/categories.csv", header=None, names=['item', 'subCategory'])
-    elif file == "categories":
-        return pd.read_csv("./rules/breakdown.csv", header=None, names=['subCategory', 'category'])
-
 
 def testDf(df):
     assert df.dtypes['debit'] == 'float64'
@@ -77,14 +95,8 @@ def writeToJson(df):
     with open('analysis/js/data.json', 'w') as jsonFile:
         json.dump(items, jsonFile)
 
-def hashData():
+def listNewItems(files):
     global oldColumns
-    dlFiles = listdir("./download")
-    try:
-        dlFiles.remove('.DS_Store')
-    except:
-        pass
-
     old = getFile('data')
     old['subCategory'].fillna("",inplace=True)
     old.fillna(value=0,inplace=True)
@@ -93,15 +105,16 @@ def hashData():
     combinedAll = old[oldColumns]
     combinedNew = pd.DataFrame(columns=oldColumns)
 
-    for file in dlFiles:
-        new = pd.read_csv("./download/"+file, header=None, names=newColumns)
-        new.fillna(value=0,inplace=True)
-        testDf(new)
+    for new in files:
+        newData = new['data']
+        newName = new['name']
+        newData.fillna(value=0,inplace=True)
+        testDf(newData)
 
-        newItems = findNewItems(combinedAll, new, file.split(".")[0])
+        newItems = findNewItems(combinedAll, newData, newName)
         newToSave = newItems[addedColumns]
 
-        print(f"{file} - {len(newToSave)} new items found")
+        print(f"{newName} - {len(newToSave)} new items found")
 
         combinedAll = pd.concat([combinedAll, newToSave])
         combinedNew = pd.concat([combinedNew, newToSave])
@@ -161,17 +174,11 @@ def processData(newItems,doAll = False):
     data['subCategory'] = subCatArray
     data['category'] = data['subCategory'].map(categoryMap)
     data['year']= pd.to_datetime(data['date']).dt.year
-    data['month']= pd.to_datetime(data['date']).dt.month
-
+    data['month']= pd.to_datetime(data['date']).dt.month    
     return data
-    
-def resetToCurrentData():
-    processedData = processData(None, True)  
-    processedToSave = processedData[processedColumns].sort_values(by='date', ascending=False)
-    saveDf(processedToSave, 'processed', 'processed', True)
 
-def runProcess():
-    newItems = hashData()
+def runProcess(files):
+    newItems = listNewItems(files)
     if(newItems['item'].count() > 0):
         processedData = processData(newItems)   
         dataWithoutCategory = (processedData[processedData['subCategory'] == ""])
@@ -196,4 +203,10 @@ def runProcess():
     else:
         print('no new items')
         
-runProcess()
+def resetToCurrentData():
+    processedData = processData(None, True)  
+    processedToSave = processedData[processedColumns].sort_values(by='date', ascending=False)
+    saveDf(processedToSave, 'processed', 'processed', True)
+
+files = getFiles()
+runProcess(files)
