@@ -1,0 +1,12 @@
+.dropfile-zone {
+	justify-content: center;
+	display: flex;
+}
+
+.dropfile-list {
+	margin: 20px;
+}
+
+.dropfile-upload-button {
+	margin: 20px;
+}
