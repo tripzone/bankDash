@@ -84,16 +84,23 @@ def findNewItems(old, new, fileName):
     newItems = new[new['hashfound'] == False]
     return newItems
 
+def convertToJsonArray(df):
+    # columns = df.columns
+    result = []
+    for i, row in df.iterrows():
+        dummy = {}
+        for column in df.keys():
+            dummy[column]=row[column]
+        result.append(dummy)
+    # result = df.to_dict('records')
+    return(result)
+
+
 def writeToJson(df):
-    gooddata = df
-    items = []
-    for index, row in gooddata.iterrows():
-        temp = {}
-        for key in row.keys():
-            temp[key] = row[key]
-        items.append(temp)
+    items = convertToJsonArray(df)
     with open('analysis/js/data.json', 'w') as jsonFile:
         json.dump(items, jsonFile)
+
 
 def listNewItems(files):
     global oldColumns
@@ -157,7 +164,6 @@ def processData(newItems,doAll = False):
     data['subCategory'] = subCatArray
     subCatArray = pd.Series(subCatArray) 
 
-
     for i, categoryRow in subCategories.iloc[::-1].iterrows():
         indo = ((data['item'].str.contains(categoryRow['item'])) & (data['subCategory']==""))
         subCatArray[indo] = categoryRow['subCategory']
@@ -198,18 +204,21 @@ def runProcess(files):
             print("SAVED")
         else:
             print('Found Gaps, NOT SAVED')
-            print(dataWithoutCategory[['item','date','balance']])
+            # print(dataWithoutCategory[['item','date','balance']])
+            itemsToReturn = dataWithoutCategory[['hash','item','date','balance', 'account']]
+            return({"missing": True,"items": itemsToReturn})
     #       dataWithoutCategory[['item','date','balance']].to_csv('./processed/not_found.csv')
     else:
         print('no new items')
+        return({"missing": False, "items": pd.DataFrame()})
         
 def resetToCurrentData():
     processedData = processData(None, True)  
     processedToSave = processedData[processedColumns].sort_values(by='date', ascending=False)
     saveDf(processedToSave, 'processed', 'processed', True)
 
-files = getFiles()
-runProcess(files)
+# files = getFiles()
+# runProcess(files)
 
 def alibaba():
     print('hello234')

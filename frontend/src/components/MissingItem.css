@@ -1,0 +1,31 @@
+.missingitem-cell {
+	margin: 15px 1px 15px;
+	flex-basis: 7%;
+	text-align: start;
+}
+
+.largecell {
+	flex-basis:35%;
+}
+
+.medcell {
+	flex-basis:15%;
+}
+
+.missingitem-row {
+	display: flex;
+	margin-left: 30px;
+	align-items: center;
+}
+
+.hover-clickable {
+	cursor: pointer;
+}
+
+.input-field {
+ margin-top: 0;
+}
+
+.marginleft{
+	margin-left: 10px;
+}
