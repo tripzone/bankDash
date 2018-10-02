@@ -9,7 +9,7 @@
 }
 
 .medcell {
-	flex-basis:15%;
+	flex-basis:50%;
 }
 
 .missingitem-row {
@@ -28,4 +28,15 @@
 
 .marginleft{
 	margin-left: 10px;
+}
+
+.input-fields {
+	display: flex;
+	align-items: center;
+	margin-left: 0px;
+}
+
+h4 {
+	font-family: 'Garamond', sans-serif;
+	text-transform: uppercase;
 }

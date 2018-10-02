@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import Dropzone from 'react-dropzone'
 import request from 'request';
 import classNames from 'classnames'
+import { Button } from 'react-materialize'
 
 import './Dropfile.css';
+import classnames from 'classnames';
 
 class Dropfile extends Component {
 
@@ -41,7 +43,7 @@ class Dropfile extends Component {
   render() {
     return (
       <div>
-        <button className="waves-effect green waves-light btn dropfile-upload-button" onClick={() => this.props.submitFile(this.state.currentFiles)}>Upload Files</button>
+        <Button waves='light' className={classnames("dropfile-upload-button", { "disabled": this.state.currentFiles.length == 0 })} onClick={() => this.props.submitFile(this.state.currentFiles)}>Upload Files</Button>
         <div className="dropfile-zone">
           <Dropzone onDrop={this.onDrop.bind(this)}>
             <p className='admin-item'>Drop or Click to add files</p>
@@ -50,9 +52,9 @@ class Dropfile extends Component {
         <div className='dropfile-list'>
           {this.displayFiles()}
         </div>
-        <button className="waves-effect green waves-light btn dropfile-upload-button" onClick={() => this.props.process()}>Process</button>
+        <Button waves='light' className={classnames("dropfile-upload-button", { "disabled": !this.props.backendFiles })} onClick={() => this.props.process()}>Process</Button>
 
-      </div>
+      </div >
     );
   }
 }

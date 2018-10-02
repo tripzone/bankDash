@@ -395,7 +395,7 @@ POKE BAR,restaurant
 MILLER TAVERN,pub
 WILLIAMS LANDING,restaurant
 RONA,homeExpense
-THE CHILDRENS PLACE,kids
+THE CHILDRENS PLACE,child
 PHO MI VIET THA,restaurant
 ANA PASTRY,grocery
 CONVENIENCE,shopping
@@ -406,3 +406,10 @@ LA VIE EN ROSE,shopping
 REAL ESTATE COUNCIL,misc
 VISTAPRINT.CA,misc
 OLD NAVY,shopping
+DULUX PAINTS,homeExpense
+KIJIJI CANADA,expensing
+BUY BUY BABY,child
+ULTRA CONVENICE,shopping
+DAILY FRESH,grocery
+Automated Banking Machine ATM DEPOSIT JANE + NORWOOD,deposit
+Automated Banking Machine ATM DEPOSIT JANE,deposit

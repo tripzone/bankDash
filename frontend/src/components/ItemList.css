@@ -1,0 +1,29 @@
+.itemlist-cell {
+	margin: 15px 1px 15px;
+	flex-basis: 7%;
+	text-align: start;
+}
+
+
+.midcell {
+	flex-basis: 12%;
+}
+
+.itemlist-row {
+	display: flex;
+	margin-left: 30px;
+	align-items: center;
+}
+
+.hover-clickable {
+	cursor: pointer;
+}
+
+.strikethrough {
+	text-decoration: line-through;
+	color: green;
+}
+
+.marginleft {
+	margin-left: 10px;
+}

@@ -2,7 +2,7 @@ from flask import Flask, request, redirect, jsonify
 from flask_cors import CORS
 import pandas as pd
 import json
-from process import runProcess, convertToJsonArray, getFile
+from process import runProcess, convertToJsonArray, getFile, writeFile, changeSubcategory, resetToCurrentData
 
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -34,9 +34,7 @@ def reset_backend_files():
 @app.route('/file', methods=['POST'])
 def upload_file():
 	global allFiles
-	reset_backend_files()
 	if request.method == 'POST':
-
 		if 'file' not in request.files:
 			print('No file part')
 			return redirect(request.url)
@@ -58,7 +56,7 @@ def transform_allFiles(files):
 	allFilesTransformed = []
 	for file in allFiles:
 		dummy = {}
-		dummy['name']=file;
+		dummy['name']=file.split(".")[0];
 		dummy['data']=allFiles[file]
 		allFilesTransformed.append(dummy)
 	return allFilesTransformed;
@@ -70,16 +68,42 @@ def process_files():
 	if request.method == 'POST':
 		results = runProcess(allFilesTransformed)
 		# print(convertToJsonArray(results))
-		print(results)
 		return json.dumps({"success":True, "missing":results['missing'], "data": convertToJsonArray(results['items'])}), 200, {"ContentType":"application/json"}
 
 @app.route('/getCategories', methods=['GET'])
 def get_categories():
 	categories = getFile('categories')
-	print(categories)
 	return json.dumps({"success":True, "data": convertToJsonArray(categories)}), 200, {"ContentType":"application/json"}
 
+@app.route('/setCustomField', methods=['Post'])
+def set_custom_field():
+	data = json.loads(request.data)
+	print("changing ", data['hash'], " to ", data['value'])
+	df = changeSubcategory(data['hash'], data['value'])
+	writeFile("data", df)
+	return json.dumps({"success":True, "data": {data['hash']: data['value']}}), 200, {"ContentType":"application/json"}
 
+
+@app.route('/reprocess', methods=['Post'])
+def reprocess():
+	resetToCurrentData()
+	return json.dumps({"success":True}), 200, {"ContentType":"application/json"}
+
+@app.route('/saveFile', methods=['POST'])
+def save_file():
+	file = request.headers.get("file")
+	data = json.loads(request.data)
+	dummy = getFile(file)
+	print('YUAP', data)
+	print('YEP', dummy['item'])
+	duplicated = data[0]['item'] in dummy['item'].values
+	if not duplicated:
+		dummy = dummy.append(data, ignore_index=True)
+		print('saved to file', file, dummy.tail(5))
+		writeFile(file, dummy)
+		return json.dumps({"success":True}), 200, {"ContentType":"application/json"}
+
+	return json.dumps({"success":False, "data":"duplicated"}), 200, {"ContentType":"application/json"}
 
 
 if __name__ == "__main__":

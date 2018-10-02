@@ -36,7 +36,15 @@ def getFile(file):
         return pd.read_csv("./rules/categories.csv", header=None, names=['item', 'subCategory'])
     elif file == "categories":
         return pd.read_csv("./rules/breakdown.csv", header=None, names=['subCategory', 'category'])
-
+    
+def writeFile(file, df):
+    if file =="maps":
+        df.to_csv('./rules/1to1maps.csv', index=False, header=False)  
+    elif file=="subCategories":
+        df.to_csv('./rules/categories.csv', index=False, header=False)  
+    elif file =="data":
+        df.to_csv('./processed/data.csv', index=False, header=False)  
+  
 
 # Hash Data
 
@@ -73,6 +81,13 @@ def saveDf(df, fileName, path, header):
     miliTime = int(round(time.time() * 1000))
     df.to_csv(f'./backup/{fileName}-{str(miliTime)}.csv', index=False, header=header)
     df.to_csv(f'./{path}/{fileName}.csv', index=False, header=header)    
+
+def changeSubcategory(hash, subCategory):
+    df = getFile("data")
+    df['subCategory'].fillna("",inplace=True)
+    df.fillna(value=0,inplace=True)
+    df.loc[df["hash"] == hash, "subCategory"] = subCategory
+    return df
     
 def findNewItems(old, new, fileName):
     new['hash']= hashit(new)
@@ -200,7 +215,7 @@ def runProcess(files):
             saveDf(combinedData, 'data', 'processed', False)
 
             writeToJson(processedToSave)
-
+            return({"missing": False,"items": processedData})
             print("SAVED")
         else:
             print('Found Gaps, NOT SAVED')
