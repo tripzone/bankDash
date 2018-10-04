@@ -30,10 +30,10 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch('http://0.0.0.0:600/reset', {
+    fetch('http://0.0.0.0:3005/reset', {
       method: 'POST',
     });
-    fetch('http://0.0.0.0:600/getCategories', {
+    fetch('http://0.0.0.0:3005/getCategories', {
       method: 'GET',
     }).then(x => x.json()).then(response => {
       const categories = response.data.reduce((sum, x) => {
@@ -61,7 +61,7 @@ class App extends Component {
     currentFiles.forEach(file => {
       var formData = new FormData();
       formData.append('file', file);
-      fetch('http://0.0.0.0:600/file', {
+      fetch('http://0.0.0.0:3005/file', {
         method: 'POST',
         body: formData
       }).then(response => response.json())
@@ -75,7 +75,7 @@ class App extends Component {
 
 
   process() {
-    return fetch('http://0.0.0.0:600/process', {
+    return fetch('http://0.0.0.0:3005/process', {
       method: 'POST',
     }).then(response => response.json())
       .then(response => this.setState({
@@ -111,7 +111,7 @@ class App extends Component {
       }
     })
     if (goodToSubmit) {
-      return fetch('http://0.0.0.0:600/saveFile', {
+      return fetch('http://0.0.0.0:3005/saveFile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ class App extends Component {
       }
     })
     if (goodToSubmit) {
-      return fetch('http://0.0.0.0:600/saveFile', {
+      return fetch('http://0.0.0.0:3005/saveFile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ class App extends Component {
 
   setCustomField(hash, value) {
     const requestBody = { hash: hash, value: value }
-    return fetch('http://0.0.0.0:600/setCustomField', {
+    return fetch('http://0.0.0.0:3005/setCustomField', {
       method: 'POST',
       body: JSON.stringify(requestBody)
     }).then(response => response.json())
@@ -168,7 +168,7 @@ class App extends Component {
   }
 
   reprocess() {
-    return fetch('http://0.0.0.0:600/reprocess', {
+    return fetch('http://0.0.0.0:3005/reprocess', {
       method: 'POST',
     }).then(response => response.json())
       .then(response => this.resetAll())
@@ -183,7 +183,7 @@ class App extends Component {
       newOneOnOnes: {},
       newCategories: {},
     })
-    fetch('http://0.0.0.0:600/reset', {
+    fetch('http://0.0.0.0:3005/reset', {
       method: 'POST',
     });
   }

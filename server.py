@@ -3,8 +3,10 @@ from flask_cors import CORS
 import pandas as pd
 import json
 from process import runProcess, convertToJsonArray, getFile, writeFile, changeSubcategory, resetToCurrentData
-
+import os
 import logging
+from gcp import upload_blob, download_blob
+
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
@@ -14,8 +16,12 @@ CORS(app)
 def home():
 	return json.dumps({"success":True}), 200, {"ContentType":"application/json"}
 
+# os.system('export GOOGLE_APPLICATION_CREDENTIALS=./private/bankdash22-storage.json')
+# print('amo',os.system('$GOOGLE_APPLICATION_CREDENTIALS'))
+
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = set(['xlsx', 'csv'])
+GOOGLE_APPLICATION_CREDENTIALS='./private/bankdash22-storage.json'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
@@ -105,6 +111,10 @@ def save_file():
 
 	return json.dumps({"success":False, "data":"duplicated"}), 200, {"ContentType":"application/json"}
 
+@app.route('/test', methods=['GET'])
+def test():
+	return json.dumps({"success":True})
+	# upload_blob("./test.ping", "test.ping")
 
 if __name__ == "__main__":
-  app.run(host="0.0.0.0", debug=True, port=600)
+  app.run(host="0.0.0.0", debug=True, port=3005)

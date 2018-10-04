@@ -7,6 +7,9 @@ import time
 from shutil import copyfile
 from os import listdir
 import re
+from gcp import upload_blob, download_blob
+
+saveLocation = 'gcs'
 
 def getFiles():
     dlFiles = listdir("./download")
@@ -26,25 +29,62 @@ def getFiles():
 
 
 def getFile(file):
-    if file == "data":
-        return pd.read_csv("./processed/data.csv", header=None, names=oldColumns,index_col=False)
-    elif file == "processed":
-        return pd.read_csv("./processed/processed.csv",index_col=False)
-    elif file == "maps":
-        return pd.read_csv("./rules/1to1maps.csv", header=None, names=['item', 'subCategory'])
-    elif file == "subCategories":
-        return pd.read_csv("./rules/categories.csv", header=None, names=['item', 'subCategory'])
-    elif file == "categories":
-        return pd.read_csv("./rules/breakdown.csv", header=None, names=['subCategory', 'category'])
-    
+    global saveLocation
+    if (saveLocation=='local'):
+        if file == "data":
+            return pd.read_csv("./data/data.csv", header=None, names=oldColumns,index_col=False)
+        elif file == "processed":
+            return pd.read_csv("./data/processed.csv",index_col=False)
+        elif file == "maps":
+            return pd.read_csv("./data/1to1maps.csv", header=None, names=['item', 'subCategory'])
+        elif file == "subCategories":
+            return pd.read_csv("./data/categories.csv", header=None, names=['item', 'subCategory'])
+        elif file == "categories":
+            return pd.read_csv("./data/breakdown.csv", header=None, names=['subCategory', 'category'])
+    if (saveLocation=='gcs'):
+        if file == "data":
+            download_blob('data/data.csv', './temp/data.csv')
+            return pd.read_csv("./temp/data.csv", header=None, names=oldColumns,index_col=False)
+        elif file == "processed":
+            download_blob('data/processed.csv', './temp/processed.csv')
+            return pd.read_csv("./temp/processed.csv",index_col=False)
+        elif file == "maps":
+            download_blob('data/1to1maps.csv', './temp/1to1maps.csv')
+            return pd.read_csv("./temp/1to1maps.csv", header=None, names=['item', 'subCategory'])
+        elif file == "subCategories":
+            download_blob('data/categories.csv', './temp/categories.csv')
+            return pd.read_csv("./temp/categories.csv", header=None, names=['item', 'subCategory'])
+        elif file == "categories":
+            download_blob('data/breakdown.csv', './temp/breakdown.csv')
+            return pd.read_csv("./temp/breakdown.csv", header=None, names=['subCategory', 'category'])
+
 def writeFile(file, df):
-    if file =="maps":
-        df.to_csv('./rules/1to1maps.csv', index=False, header=False)  
-    elif file=="subCategories":
-        df.to_csv('./rules/categories.csv', index=False, header=False)  
-    elif file =="data":
-        df.to_csv('./processed/data.csv', index=False, header=False)  
-  
+    global saveLocation
+    if (saveLocation=='local'):
+        if file =="maps":
+            df.to_csv('./data/1to1maps.csv', index=False, header=False)  
+        elif file=="subCategories":
+            df.to_csv('./data/categories.csv', index=False, header=False)  
+        elif file =="data":
+            df.to_csv('./data/data.csv', index=False, header=False)  
+    if (saveLocation=='gcs'):
+        if file =="maps":
+            df.to_csv('./temp/1to1maps.csv', index=False, header=False)
+            upload_blob('./temp/1to1maps.csv', 'data/1to1maps.csv')
+        elif file=="subCategories":
+            df.to_csv('./temp/categories.csv', index=False, header=False)  
+            upload_blob('./temp/categories.csv', 'data/categories.csv')
+        elif file =="data":
+            df.to_csv('./temp/data.csv', index=False, header=False)  
+            upload_blob('./temp/data.csv', 'data/data.csv')
+
+
+def writeToJson(df):
+    items = convertToJsonArray(df)
+    with open('analysis/js/data.json', 'w') as jsonFile:
+        json.dump(items, jsonFile)
+    if (saveLocation == "gcs"):
+        upload_blob('analysis/js/data.json', 'data/data.json')
 
 # Hash Data
 
@@ -77,10 +117,17 @@ def fixDf(df):
     df=df[oldColumns]
     return df
 
-def saveDf(df, fileName, path, header):
+def saveDf(df, fileName, header):
     miliTime = int(round(time.time() * 1000))
-    df.to_csv(f'./backup/{fileName}-{str(miliTime)}.csv', index=False, header=header)
-    df.to_csv(f'./{path}/{fileName}.csv', index=False, header=header)    
+    global saveLocation
+    if (saveLocation=="local"):
+        df.to_csv(f'./backup/{fileName}-{str(miliTime)}.csv', index=False, header=header)
+        df.to_csv(f'./data/{fileName}.csv', index=False, header=header)  
+    elif (saveLocation=="gcs"):
+        df.to_csv(f'./temp/{fileName}-{str(miliTime)}.csv', index=False, header=header)
+        df.to_csv(f'./temp/{fileName}.csv', index=False, header=header)  
+        upload_blob(f'./temp/{fileName}-{str(miliTime)}.csv', f'backup/{fileName}-{str(miliTime)}.csv')
+        upload_blob(f'./temp/{fileName}.csv', f'data/{fileName}.csv')
 
 def changeSubcategory(hash, subCategory):
     df = getFile("data")
@@ -109,12 +156,6 @@ def convertToJsonArray(df):
         result.append(dummy)
     # result = df.to_dict('records')
     return(result)
-
-
-def writeToJson(df):
-    items = convertToJsonArray(df)
-    with open('analysis/js/data.json', 'w') as jsonFile:
-        json.dump(items, jsonFile)
 
 
 def listNewItems(files):
@@ -207,12 +248,12 @@ def runProcess(files):
             processedAlready = getFile('processed')
             processedAll = pd.concat([processedData, processedAlready])
             processedToSave = processedAll[processedColumns].sort_values(by='date', ascending=False)
-            saveDf(processedToSave, 'processed', 'processed', True)
+            saveDf(processedToSave, 'processed', True)
 
             dataAll = getFile('data')
             combinedData = pd.concat([dataAll, newItems])
             combinedData = combinedData[oldColumns]
-            saveDf(combinedData, 'data', 'processed', False)
+            saveDf(combinedData, 'data', False)
 
             writeToJson(processedToSave)
             return({"missing": False,"items": processedData})
@@ -230,7 +271,8 @@ def runProcess(files):
 def resetToCurrentData():
     processedData = processData(None, True)  
     processedToSave = processedData[processedColumns].sort_values(by='date', ascending=False)
-    saveDf(processedToSave, 'processed', 'processed', True)
+    saveDf(processedToSave, 'processed', True)
+
 
 # files = getFiles()
 # runProcess(files)

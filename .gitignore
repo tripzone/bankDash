@@ -9,6 +9,10 @@ __pycache__/
 *processed/
 *analysis/
 *backup/
+*private/
+*data/
+*temp/
+
 
 # C extensions
 *.so
