@@ -121,13 +121,13 @@ def saveDf(df, fileName, header):
     miliTime = int(round(time.time() * 1000))
     global saveLocation
     if (saveLocation=="local"):
-        df.to_csv(f'./backup/{fileName}-{str(miliTime)}.csv', index=False, header=header)
-        df.to_csv(f'./data/{fileName}.csv', index=False, header=header)  
+        df.to_csv('./backup/'+fileName+'-'+str(miliTime)+'.csv', index=False, header=header)
+        df.to_csv('./data/'+fileName+'.csv', index=False, header=header)  
     elif (saveLocation=="gcs"):
-        df.to_csv(f'./temp/{fileName}-{str(miliTime)}.csv', index=False, header=header)
-        df.to_csv(f'./temp/{fileName}.csv', index=False, header=header)  
-        upload_blob(f'./temp/{fileName}-{str(miliTime)}.csv', f'backup/{fileName}-{str(miliTime)}.csv')
-        upload_blob(f'./temp/{fileName}.csv', f'data/{fileName}.csv')
+        df.to_csv('./temp/'+fileName+'-'+str(miliTime)+'.csv', index=False, header=header)
+        df.to_csv('./temp/'+fileName+'.csv', index=False, header=header)  
+        upload_blob('./temp/'+fileName+'-'+str(miliTime)+'.csv', 'backup/'+fileName+'-'+str(miliTime)+'.csv')
+        upload_blob('./temp/'+fileName+'.csv', 'data/'+fileName+'.csv')
 
 def changeSubcategory(hash, subCategory):
     df = getFile("data")
