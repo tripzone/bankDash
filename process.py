@@ -177,7 +177,7 @@ def listNewItems(files):
         newItems = findNewItems(combinedAll, newData, newName)
         newToSave = newItems[addedColumns]
 
-        print(newName+" - "+len(newToSave)+" new items found")
+        print(newName+" - "+str(len(newToSave))+" new items found")
 
         combinedAll = pd.concat([combinedAll, newToSave])
         combinedNew = pd.concat([combinedNew, newToSave])
