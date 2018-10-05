@@ -3,12 +3,12 @@
 	display: flex;
 }
 
-.dropfile-list {
-	margin: 20px;
-}
-
 .file-selected {
 	color: green;
+}
+
+.dropfile-list {
+	margin: 20px;
 }
 
 .dropfile-upload-button {
