@@ -14,7 +14,7 @@ CORS(app)
 
 @app.route("/test")
 def home():
-	return json.dumps({"success":True}), 200, {"ContentType":"application/json"}
+	return json.dumps({"success":True, "test":"build1"}), 200, {"ContentType":"application/json"}
 
 # os.system('export GOOGLE_APPLICATION_CREDENTIALS=./private/bankdash22-storage.json')
 # print('amo',os.system('$GOOGLE_APPLICATION_CREDENTIALS'))
@@ -110,11 +110,6 @@ def save_file():
 		return json.dumps({"success":True}), 200, {"ContentType":"application/json"}
 
 	return json.dumps({"success":False, "data":"duplicated"}), 200, {"ContentType":"application/json"}
-
-@app.route('/test', methods=['GET'])
-def test():
-	return json.dumps({"success":True,"test":"first commit"})
-	# upload_blob("./test.ping", "test.ping")
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", debug=True, port=3005)
