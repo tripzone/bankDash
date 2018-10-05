@@ -113,7 +113,7 @@ def save_file():
 
 @app.route('/test', methods=['GET'])
 def test():
-	return json.dumps({"success":True})
+	return json.dumps({"success":True,"test":"first commit"})
 	# upload_blob("./test.ping", "test.ping")
 
 if __name__ == "__main__":
