@@ -1,5 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-back', '.' ]
+  dir: 'backend'
 images:
 - 'gcr.io/bankdash22/bankdash-back'
