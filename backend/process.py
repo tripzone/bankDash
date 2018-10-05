@@ -81,10 +81,13 @@ def writeFile(file, df):
 
 def writeToJson(df):
     items = convertToJsonArray(df)
-    with open('analysis/js/data.json', 'w') as jsonFile:
-        json.dump(items, jsonFile)
+    if (saveLocation == "local"):
+        with open('../analysis/js/data.json', 'w') as jsonFile:
+            json.dump(items, jsonFile)
     if (saveLocation == "gcs"):
-        upload_blob('analysis/js/data.json', 'data/data.json')
+        with open('./temp/data.json', 'w') as jsonFile:
+            json.dump(items, jsonFile)
+            upload_blob('./temp/data.json', 'data/data.json')
 
 # Hash Data
 

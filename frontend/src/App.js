@@ -4,7 +4,7 @@ import Dropfile from './components/Dropfile'
 import ItemList from './components/ItemList'
 import MissingItem from './components/MissingItem'
 import { Button, Icon } from 'react-materialize'
-
+import { serverPath } from './variables'
 import './App.css';
 
 class App extends Component {
@@ -30,10 +30,11 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch('http://35.185.34.71:3005/reset', {
+
+    fetch(serverPath + '/reset', {
       method: 'POST',
     });
-    fetch('http://35.185.34.71:3005/getCategories', {
+    fetch(serverPath + '/getCategories', {
       method: 'GET',
     }).then(x => x.json()).then(response => {
       const categories = response.data.reduce((sum, x) => {
@@ -61,7 +62,7 @@ class App extends Component {
     currentFiles.forEach(file => {
       var formData = new FormData();
       formData.append('file', file);
-      fetch('http://35.185.34.71:3005/file', {
+      fetch(serverPath + '/file', {
         method: 'POST',
         body: formData
       }).then(response => response.json())
@@ -75,7 +76,7 @@ class App extends Component {
 
 
   process() {
-    return fetch('http://35.185.34.71:3005/process', {
+    return fetch(serverPath + '/process', {
       method: 'POST',
     }).then(response => response.json())
       .then(response => this.setState({
@@ -111,7 +112,7 @@ class App extends Component {
       }
     })
     if (goodToSubmit) {
-      return fetch('http://35.185.34.71:3005/saveFile', {
+      return fetch(serverPath + '/saveFile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +134,7 @@ class App extends Component {
       }
     })
     if (goodToSubmit) {
-      return fetch('http://35.185.34.71:3005/saveFile', {
+      return fetch(serverPath + '/saveFile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -159,7 +160,7 @@ class App extends Component {
 
   setCustomField(hash, value) {
     const requestBody = { hash: hash, value: value }
-    return fetch('http://35.185.34.71:3005/setCustomField', {
+    return fetch(serverPath + '/setCustomField', {
       method: 'POST',
       body: JSON.stringify(requestBody)
     }).then(response => response.json())
@@ -168,7 +169,7 @@ class App extends Component {
   }
 
   reprocess() {
-    return fetch('http://35.185.34.71:3005/reprocess', {
+    return fetch(serverPath + '/reprocess', {
       method: 'POST',
     }).then(response => response.json())
       .then(response => this.resetAll())
@@ -183,7 +184,7 @@ class App extends Component {
       newOneOnOnes: {},
       newCategories: {},
     })
-    fetch('http://35.185.34.71:3005/reset', {
+    fetch(serverPath + '/reset', {
       method: 'POST',
     });
   }

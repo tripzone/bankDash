@@ -1,8 +1,12 @@
 pip3 install flask
 pip3 install flask_cors
 pip3 install pandas
+pip3 install --upgrade google-cloud-storage
 
-sudo apt-get install python-pip
+sudo apt-get update
+sudo apt-get install python3-pip -y
+
+
 
 
 sudo apt-get install build-essential checkinstall -y -qq
@@ -12,3 +16,12 @@ sudo tar xzf Python-3.7.0.tgz
 cd Python-3.7.0
 sudo ./configure --enable-optimizations
 sudo make altinstall
+or 
+
+sudo nano /etc/apt/sources.list
+# add
+deb http://ftp.de.debian.org/debian testing main
+echo 'APT::Default-Release "stable";' | sudo tee -a /etc/apt/apt.conf.d/00local
+sudo apt-get update
+sudo apt-get -t testing install python3.6
+python3.6 -V

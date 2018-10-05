@@ -1,0 +1,10 @@
+version: '3'
+services:
+  # web:
+  #   build: ./reactApp
+  #   ports:
+  #    - "301:80"
+  bankdash-backend:
+    build: ./backend
+    ports:
+     - "300:3005"

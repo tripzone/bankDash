@@ -1,0 +1,1 @@
+export const serverPath = "http://35.196.225.132:3005"
