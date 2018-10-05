@@ -1,6 +1,4 @@
 flask
 flask_cors
 pandas
-sklearn
 requests
-pyrebase
