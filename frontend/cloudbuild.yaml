@@ -1,18 +1,18 @@
 steps:
 - name: 'gcr.io/cloud-builders/npm'
+  volumes:
+  - name: 'vol1'
+    path: '/persistent_volume'
   args: ['install']
-  volumes: 
-    - name: 'vol1'
-    path: '/persistent_volume'
 - name: 'gcr.io/cloud-builders/npm'
+  volumes:
+  - name: 'vol1'
+    path: '/persistent_volume'
   args: ['run', 'build']
-  volumes: 
-    - name: 'vol1'
-    path: '/persistent_volume'
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-front', '.' ]
-  volumes: 
-    - name: 'vol1'
+  volumes:
+  - name: 'vol1'
     path: '/persistent_volume'
+  args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-front', '.' ]
 images:
 - 'gcr.io/bankdash22/bankdash-front'
