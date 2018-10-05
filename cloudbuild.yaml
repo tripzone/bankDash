@@ -1,5 +1,10 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-back', './backend/' ]
+- name: 'gcr.io/cloud-builders/kubectl'
+  args: ['set', 'image', 'deployment/my-deployment', 'my-container=gcr.io/bankdash22/bankdash-back']
+  env:
+  - 'CLOUDSDK_COMPUTE_ZONE=us-east4-b'
+  - 'CLOUDSDK_CONTAINER_CLUSTER=my-cluster'
 images:
 - 'gcr.io/bankdash22/bankdash-back'
