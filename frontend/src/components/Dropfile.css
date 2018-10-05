@@ -7,11 +7,10 @@
 	display: flex;
 }
 
-.dropfile-list {
-	margin: 20px;
-}
-
 .dropfile-upload-button {
 	margin: 20px;
 }
 
+.dropfile-list {
+	margin: 20px;
+}
