@@ -1,0 +1,12 @@
+steps:
+- name: 'gcr.io/cloud-builders/npm'
+  args: ['install']
+  dir: '/frontend/'
+- name: 'gcr.io/cloud-builders/npm'
+  args: ['run', 'build']
+  dir: '/frontend/'
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-front', '.' ]
+  dir: '/frontend/'
+images:
+- 'gcr.io/bankdash22/bankdash-front'
