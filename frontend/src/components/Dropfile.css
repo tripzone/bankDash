@@ -7,10 +7,11 @@
 	margin: 20px;
 }
 
+.file-selected {
+	color: green;
+}
+
 .dropfile-upload-button {
 	margin: 20px;
 }
 
-.file-selected {
-	color: green;
-}
