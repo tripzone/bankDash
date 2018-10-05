@@ -1,9 +1,12 @@
 steps:
 - name: 'gcr.io/cloud-builders/npm'
   args: ['install']
+  dir: "examples/hello"
 - name: 'gcr.io/cloud-builders/npm'
   args: ['run', 'build']
+  dir: "examples/hello"
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-front', '.' ]
+  dir: "examples/hello"
 images:
 - 'gcr.io/bankdash22/bankdash-front'
