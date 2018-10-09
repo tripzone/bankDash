@@ -30,6 +30,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.log(serverPath)
 
     fetch(serverPath + '/reset', {
       method: 'POST',
