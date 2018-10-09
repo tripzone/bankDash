@@ -10,6 +10,7 @@ steps:
   dir: 'frontend/'
 - name: 'gcr.io/cloud-builders/docker'
   args: ["push", "gcr.io/bankdash22/bankdash-front"]
+  dir: 'frontend/'
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
   - 'set'
@@ -17,6 +18,7 @@ steps:
   - 'deployment'
   - 'bankdash-front-app'
   - 'bankdash-front=gcr.io/bankdash22/bankdash-front'
+  dir: 'frontend/'
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
   - 'CLOUDSDK_CONTAINER_CLUSTER=bankdash-cluster'
