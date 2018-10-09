@@ -6,10 +6,10 @@ steps:
   args: ['run', 'build']
   dir: 'frontend/'
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-front', '.' ]
+  args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-front:1.0.$BUILD_ID', '.' ]
   dir: 'frontend/'
 - name: 'gcr.io/cloud-builders/docker'
-  args: ["push", "gcr.io/bankdash22/bankdash-front"]
+  args: ["push", "gcr.io/bankdash22/bankdash-front:1.0.$BUILD_ID"]
   dir: 'frontend/'
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
@@ -17,7 +17,7 @@ steps:
   - 'image'
   - 'deployment'
   - 'bankdash-front-app'
-  - 'bankdash-front=gcr.io/bankdash22/bankdash-front:latest'
+  - 'bankdash-front=gcr.io/bankdash22/bankdash-front:1.0.$BUILD_ID'
   dir: 'frontend/'
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
