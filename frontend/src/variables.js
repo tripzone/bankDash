@@ -1,1 +1,1 @@
-export const serverPath = "http://35.196.225.132:3005"
+export const serverPath = "http://35.226.148.56/"
