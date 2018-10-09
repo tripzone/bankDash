@@ -7,7 +7,7 @@ steps:
   - 'set'
   - 'image'
   - 'deployment/bankdash-back-app'
-  - 'my-container=gcr.io/bankdash22/bankdash-back'
+  - 'gcr.io/bankdash22/bankdash-back'
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
   - 'CLOUDSDK_CONTAINER_CLUSTER=bankdash-cluster'
