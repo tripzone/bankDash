@@ -3,7 +3,7 @@ steps:
   args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-back', '.' ]
   dir: 'backend'
 - name: 'gcr.io/cloud-builders/docker'
-  args: ["push", "gcr.io/bankdash22/bankdash-back'"]
+  args: ["push", "gcr.io/bankdash22/bankdash-back"]
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
   - 'set'
