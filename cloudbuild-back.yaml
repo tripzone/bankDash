@@ -1,16 +1,16 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-back', '.' ]
+  args: [ 'build', '-t', 'gcr.io/bankdash22/bankdash-back:1.$BUILD_ID', '.' ]
   dir: 'backend'
 - name: 'gcr.io/cloud-builders/docker'
-  args: ["push", "gcr.io/bankdash22/bankdash-back"]
+  args: ["push", "gcr.io/bankdash22/bankdash-back:1.$BUILD_ID"]
 - name: 'gcr.io/cloud-builders/kubectl'
   args:
   - 'set'
   - 'image'
   - 'deployment'
   - 'bankdash-back-app'
-  - 'bankdash-back=gcr.io/bankdash22/bankdash-back'
+  - 'bankdash-back=gcr.io/bankdash22/bankdash-back:1.$BUILD_ID'
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
   - 'CLOUDSDK_CONTAINER_CLUSTER=bankdash-cluster'
