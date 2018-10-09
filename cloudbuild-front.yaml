@@ -17,7 +17,7 @@ steps:
   - 'image'
   - 'deployment'
   - 'bankdash-front-app'
-  - 'bankdash-front=gcr.io/bankdash22/bankdash-front'
+  - 'bankdash-front=gcr.io/bankdash22/bankdash-front:latest'
   dir: 'frontend/'
   env:
   - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
