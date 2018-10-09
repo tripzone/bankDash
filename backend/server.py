@@ -14,7 +14,7 @@ CORS(app)
 
 @app.route("/test")
 def home():
-	return json.dumps({"success":True, "test":"build2"}), 200, {"ContentType":"application/json"}
+	return json.dumps({"success":True, "test":"build4"}), 200, {"ContentType":"application/json"}
 
 # os.system('export GOOGLE_APPLICATION_CREDENTIALS=./private/bankdash22-storage.json')
 # print('amo',os.system('$GOOGLE_APPLICATION_CREDENTIALS'))
