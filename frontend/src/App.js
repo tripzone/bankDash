@@ -196,7 +196,7 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          !! Kubectl
+          !!!!  Kubectl
         </header>
 
         {!this.state.processFinished &&
