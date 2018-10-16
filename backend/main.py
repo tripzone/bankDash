@@ -111,5 +111,8 @@ def save_file():
 
 	return json.dumps({"success":False, "data":"duplicated"}), 200, {"ContentType":"application/json"}
 
-if __name__ == "__main__":
-  app.run(host="0.0.0.0", debug=True, port=3005)
+if __name__ == '__main__':
+    # This is used when running locally only. When deploying to Google App
+    # Engine, a webserver process such as Gunicorn will serve the app. This
+    # can be configured by adding an `entrypoint` to app.yaml.
+    app.run(host='127.0.0.1', port=8080, debug=True)

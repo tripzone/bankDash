@@ -120,7 +120,7 @@ class App extends Component {
           "file": "maps"
         },
         body: JSON.stringify(dummyOneonOne)
-      }).then(response => response.json())
+      }).then(response => { console.log(response); return response.json() })
         .then(response => console.log('response'))
     }
   }

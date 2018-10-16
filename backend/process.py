@@ -7,10 +7,10 @@ import time
 from shutil import copyfile
 from os import listdir
 import re
-from gcp import upload_blob, download_blob
+from gcp import upload_blob, download_blob, upload_json
+from io import StringIO
 
 saveLocation = 'gcs'
-
 def getFiles():
     dlFiles = listdir("./download")
     try:
@@ -43,20 +43,20 @@ def getFile(file):
             return pd.read_csv("./data/breakdown.csv", header=None, names=['subCategory', 'category'])
     if (saveLocation=='gcs'):
         if file == "data":
-            download_blob('data/data.csv', './temp/data.csv')
-            return pd.read_csv("./temp/data.csv", header=None, names=oldColumns,index_col=False)
+            download =  download_blob('data/data.csv')
+            return pd.read_csv(download, header=None, names=oldColumns,index_col=False)
         elif file == "processed":
-            download_blob('data/processed.csv', './temp/processed.csv')
-            return pd.read_csv("./temp/processed.csv",index_col=False)
+            download =  download_blob('data/processed.csv')
+            return pd.read_csv(download,index_col=False)
         elif file == "maps":
-            download_blob('data/1to1maps.csv', './temp/1to1maps.csv')
-            return pd.read_csv("./temp/1to1maps.csv", header=None, names=['item', 'subCategory'])
+            download =  download_blob('data/1to1maps.csv')
+            return pd.read_csv(download, header=None, names=['item', 'subCategory'])
         elif file == "subCategories":
-            download_blob('data/categories.csv', './temp/categories.csv')
-            return pd.read_csv("./temp/categories.csv", header=None, names=['item', 'subCategory'])
+            download =  download_blob('data/categories.csv')
+            return pd.read_csv(download, header=None, names=['item', 'subCategory'])
         elif file == "categories":
-            download_blob('data/breakdown.csv', './temp/breakdown.csv')
-            return pd.read_csv("./temp/breakdown.csv", header=None, names=['subCategory', 'category'])
+            download =  download_blob('data/breakdown.csv')
+            return pd.read_csv(download, header=None, names=['subCategory', 'category'])
 
 def writeFile(file, df):
     global saveLocation
@@ -69,14 +69,11 @@ def writeFile(file, df):
             df.to_csv('./data/data.csv', index=False, header=False)  
     if (saveLocation=='gcs'):
         if file =="maps":
-            df.to_csv('./temp/1to1maps.csv', index=False, header=False)
-            upload_blob('./temp/1to1maps.csv', 'data/1to1maps.csv')
+            upload_blob(df, 'data/1to1maps.csv')
         elif file=="subCategories":
-            df.to_csv('./temp/categories.csv', index=False, header=False)  
-            upload_blob('./temp/categories.csv', 'data/categories.csv')
+            upload_blob(df, 'data/categories.csv')
         elif file =="data":
-            df.to_csv('./temp/data.csv', index=False, header=False)  
-            upload_blob('./temp/data.csv', 'data/data.csv')
+            upload_blob(df, 'data/data.csv')
 
 
 def writeToJson(df):
@@ -85,9 +82,9 @@ def writeToJson(df):
         with open('../analysis/js/data.json', 'w') as jsonFile:
             json.dump(items, jsonFile)
     if (saveLocation == "gcs"):
-        with open('./temp/data.json', 'w') as jsonFile:
-            json.dump(items, jsonFile)
-            upload_blob('./temp/data.json', 'data/data.json')
+        io = StringIO()
+        json.dump(items, io)
+        upload_json(io, 'data/data.json')
 
 # Hash Data
 
@@ -127,10 +124,10 @@ def saveDf(df, fileName, header):
         df.to_csv('./backup/'+fileName+'-'+str(miliTime)+'.csv', index=False, header=header)
         df.to_csv('./data/'+fileName+'.csv', index=False, header=header)  
     elif (saveLocation=="gcs"):
-        df.to_csv('./temp/'+fileName+'-'+str(miliTime)+'.csv', index=False, header=header)
-        df.to_csv('./temp/'+fileName+'.csv', index=False, header=header)  
-        upload_blob('./temp/'+fileName+'-'+str(miliTime)+'.csv', 'backup/'+fileName+'-'+str(miliTime)+'.csv')
-        upload_blob('./temp/'+fileName+'.csv', 'data/'+fileName+'.csv')
+        # df.to_csv('./temp/'+fileName+'-'+str(miliTime)+'.csv', index=False, header=header)
+        # df.to_csv('./temp/'+fileName+'.csv', index=False, header=header)  
+        upload_blob(df, 'backup/'+fileName+'-'+str(miliTime)+'.csv', header)
+        upload_blob(df, 'data/'+fileName+'.csv', header)
 
 def changeSubcategory(hash, subCategory):
     df = getFile("data")
@@ -239,7 +236,7 @@ def processData(newItems,doAll = False):
     data['subCategory'] = subCatArray
     data['category'] = data['subCategory'].map(categoryMap)
     data['year']= pd.to_datetime(data['date']).dt.year
-    data['month']= pd.to_datetime(data['date']).dt.month    
+    data['month']= pd.to_datetime(data['date']).dt.month 
     return data
 
 def runProcess(files):
@@ -275,7 +272,6 @@ def resetToCurrentData():
     processedData = processData(None, True)  
     processedToSave = processedData[processedColumns].sort_values(by='date', ascending=False)
     saveDf(processedToSave, 'processed', True)
-
 
 # files = getFiles()
 # runProcess(files)
