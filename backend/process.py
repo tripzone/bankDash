@@ -4,6 +4,7 @@ import math
 import hashlib, binascii
 import numpy as np
 import time
+from datetime import datetime
 from shutil import copyfile
 from os import listdir
 import re
@@ -59,24 +60,35 @@ def getFile(file):
             return pd.read_csv(download, header=None, names=['subCategory', 'category'])
 
 def writeFile(file, df):
+    miliTime = int(round(time.time()))
+    readableTime = datetime.utcfromtimestamp(miliTime).strftime('%Y-%m-%d')
+
     global saveLocation
     if (saveLocation=='local'):
         if file =="maps":
-            df.to_csv('./data/1to1maps.csv', index=False, header=False)  
+            df.to_csv('./data/1to1maps.csv', index=False, header=False) 
+            df.to_csv('./backup/1to1maps-'+readableTime+'.csv', index=False, header=False)  
         elif file=="subCategories":
-            df.to_csv('./data/categories.csv', index=False, header=False)  
+            df.to_csv('./data/categories.csv', index=False, header=False) 
+            df.to_csv('./backup/categories-'+readableTime+'.csv', index=False, header=False)   
         elif file =="data":
-            df.to_csv('./data/data.csv', index=False, header=False)  
+            df.to_csv('./data/data.csv', index=False, header=False)
+            df.to_csv('./backup/data-'+readableTime+'.csv', index=False, header=False)    
     if (saveLocation=='gcs'):
         if file =="maps":
             upload_blob(df, 'data/1to1maps.csv')
+            upload_blob(df, 'backup/1to1maps-'+readableTime+'.csv')
         elif file=="subCategories":
             upload_blob(df, 'data/categories.csv')
+            upload_blob(df, 'backup/categories-'+readableTime+'.csv')
         elif file =="data":
             upload_blob(df, 'data/data.csv')
-
+            upload_blob(df, 'backup/data-'+readableTime+'.csv')
 
 def writeToJson(df):
+    miliTime = int(round(time.time()))
+    readableTime = datetime.utcfromtimestamp(miliTime).strftime('%Y-%m-%d')
+
     items = convertToJsonArray(df)
     if (saveLocation == "local"):
         with open('../analysis/js/data.json', 'w') as jsonFile:
@@ -85,6 +97,7 @@ def writeToJson(df):
         io = StringIO()
         json.dump(items, io)
         upload_json(io, 'data/data.json')
+        upload_json(io, 'backup/data-'+readableTime+'.json')
 
 # Hash Data
 
@@ -118,15 +131,17 @@ def fixDf(df):
     return df
 
 def saveDf(df, fileName, header):
-    miliTime = int(round(time.time() * 1000))
+    miliTime = int(round(time.time()))
+    readableTime = datetime.utcfromtimestamp(miliTime).strftime('%Y-%m-%d')
+
     global saveLocation
     if (saveLocation=="local"):
-        df.to_csv('./backup/'+fileName+'-'+str(miliTime)+'.csv', index=False, header=header)
+        df.to_csv('./backup/'+fileName+'-'+readableTime+'.csv', index=False, header=header)
         df.to_csv('./data/'+fileName+'.csv', index=False, header=header)  
     elif (saveLocation=="gcs"):
         # df.to_csv('./temp/'+fileName+'-'+str(miliTime)+'.csv', index=False, header=header)
         # df.to_csv('./temp/'+fileName+'.csv', index=False, header=header)  
-        upload_blob(df, 'backup/'+fileName+'-'+str(miliTime)+'.csv', header)
+        upload_blob(df, 'backup/'+fileName+'-'+readableTime+'.csv', header)
         upload_blob(df, 'data/'+fileName+'.csv', header)
 
 def changeSubcategory(hash, subCategory):
@@ -272,6 +287,7 @@ def resetToCurrentData():
     processedData = processData(None, True)  
     processedToSave = processedData[processedColumns].sort_values(by='date', ascending=False)
     saveDf(processedToSave, 'processed', True)
+    writeToJson(processedToSave)
 
 # files = getFiles()
 # runProcess(files)

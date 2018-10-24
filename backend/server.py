@@ -81,6 +81,15 @@ def get_categories():
 	categories = getFile('categories')
 	return json.dumps({"success":True, "data": convertToJsonArray(categories)}), 200, {"ContentType":"application/json"}
 
+@app.route('/getMappings', methods=['GET'])
+def get_subcategories():
+	file = request.headers.get("source")
+	if (file == 'subCategories' or file == 'maps'):
+		df = getFile(file)
+		return json.dumps({"success":True, "data": convertToJsonArray(df)}), 200, {"ContentType":"application/json"}
+	return json.dumps({"success":False, "data": "unknownFile"}), 200, {"ContentType":"application/json"}
+
+
 @app.route('/setCustomField', methods=['Post'])
 def set_custom_field():
 	data = json.loads(request.data)
